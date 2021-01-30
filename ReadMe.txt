@@ -9,8 +9,9 @@ NodeJs Runtime.
 Download and install NodeJs on your system from: https://nodejs.org/en/download/
 
 Usage Instructions:
-1: Copy the Wav Files/Folders (loops) to convert into the wavs folder.
-2: Follow Instructions below for your Operating System.
+1: Create a wavs folder in root directory (same directory as this Readme File).
+2: Copy the Wav Files/Folders (loops) to convert into the wavs folder.
+3: Follow Instructions below for your Operating System.
 
 Mac/Linux Users:
 01: Launch Terminal
