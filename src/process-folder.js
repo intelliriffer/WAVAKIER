@@ -8,14 +8,23 @@ processFolder();
 function processFolder() {
     let files = glob.sync("wavs/**/*\.[wW][aA][vV]");
     files = files.map(f => path.resolve(f)).filter(f => f.length > 5);
+    const execSync = require('child_process').execSync;
     files.forEach(f => {
-        runScript("./src/akaify.js", function (err) {
-            if (err) {
-                console.log(err);
-            }
-            // console.log(`Processed ${f}`);
+        try {
+            console.log(execSync(`node ./src/akaify.js "${f}"`).toString());
+        } catch (e) {
 
-        }, [`${f}`]);
+
+        }
+        /*  
+          runScript("./src/akaify.js", function (err) {
+              if (err) {
+                  console.log(err);
+              }
+              // console.log(`Processed ${f}`);
+  
+          }, [`${f}`]); */
+
     });
 }
 

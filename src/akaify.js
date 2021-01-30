@@ -30,6 +30,7 @@ let ATEMP = JSON.parse(`{
 }`);
 const MINBPM = 60;
 const MAXBPM = 200;
+const LIMIT = 300;
 const WaveFileReader = require('wavefile-reader').WaveFileReader;
 let wav = new WaveFileReader();
 //console.log(ANSI);
@@ -62,6 +63,7 @@ function acidize(data, name) {
     ATEMP.value0.defaultSlice.End = nsamples - 1;
     ATEMP.value0.numBars = beats[1] / 4;
     console.log([name].concat(beats));
+    if (beats[0] > LIMIT) throw (ANSI.wrap('FgRed', "Error: Tempo detected Beyond Limit (300 BPM) Skipping! "));
     $tempo = FL.float2HexArr(beats[0]);
     $mtempo = toBytes(parseInt(beats[0] * 1000));
     //test    
@@ -102,8 +104,8 @@ function acidize(data, name) {
 function getBeats(d, hint = 0) {
     let min = MINBPM;
     let max = MAXBPM;
-    if (hint >= min) max = parseFloat(hint + 1); //account for any decimals
-    ds = [4, 8, 16, 24, 32, 48, 64, 96, 128];
+    if (hint > min && hint <= LIMIT) max = parseFloat(hint + 1); //account for any decimals
+    let ds = [4, 8, 16, 24, 32, 48, 64, 96, 128];
     BPMS = ds.map(function (i) {
         return (60 / (d / i)).toFixed(2);
     });
