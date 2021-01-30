@@ -54,7 +54,6 @@ function isAcidic($data) { //does the file contain word acid??
 
 function acidize(data, name) {
     wav.fromBuffer(data);
-    console.log(wav);
     nsamples = (wav.data.chunkSize / wav.fmt.numChannels) / (wav.fmt.bitsPerSample / 8);
     duration = nsamples / wav.fmt.sampleRate;
     //console.log(wav);
