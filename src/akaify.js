@@ -39,14 +39,10 @@ $wFile = process.argv[2];
 if (!$wFile.toUpperCase().endsWith('.WAV')) throw (`Error: Not a Wav File --  ${$wFile}`);
 if (!fs.existsSync($wFile)) throw (ANSI.wrap('FgRed', `Error File :  ${$wFile} does not exist!`));
 fs.readFile($wFile, (err, data) => {
-    if (isAcidic(data)) {
-        console.log(ANSI.wrap('FgRed', `${$wFile} is already acidized! skipping!!`));
-    }
-    else {
-        $acid = acidize(data, $wFile);
-        fs.writeFileSync($wFile, $acid);
-        //fs.writeFileSync($wFile.replace(".wav", '') + "-acidized.wav", $acid);
-    }
+
+    $acid = acidize(data, $wFile);
+    fs.writeFileSync($wFile, $acid);
+    //fs.writeFileSync($wFile.replace(".wav", '') + "-acidized.wav", $acid);
 });
 
 function isAcidic($data) { //does the file contain word acid??
@@ -95,6 +91,10 @@ function acidize(data, name) {
         meta = [];
     }
     let ua = Uint8Array.from(acid);
+    if (isAcidic(data)) {
+        ua = Uint8Array.from([]);
+        console.log(ANSI.wrap('FgRed', `${name} is already acidized! skipping Acid Tag!!`));
+    }
     let slicepoint = data.indexOf('fmt') + 8 + wav.fmt.chunkSize;
     let header = data.slice(0, slicepoint);
     let content = data.slice(slicepoint);
