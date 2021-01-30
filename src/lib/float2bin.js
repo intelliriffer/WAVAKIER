@@ -30,9 +30,7 @@ function float2Hex(input) {
 }
 
 function float2bin(input) {
-
     input = Number(input)
-
     //Components required
     let normalPart,
         fracPart,

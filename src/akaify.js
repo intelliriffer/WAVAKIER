@@ -8,6 +8,26 @@ let fs = require('fs');
 let path = require('path');
 let ANSI = require('./lib/ansi.js');
 let FL = require('./lib/float2bin.js');
+let ATEMP = JSON.parse(`{
+    "value0": {
+        "defaultSlice": {
+            "Start": 0,
+            "End": 0,
+            "LoopStart": 0,
+            "LoopMode": 0,
+            "PulsePosition": 0,
+            "LoopCrossfadeLength": 0
+        },
+        "numBars": 2,
+        "Num slices": 0
+    },
+    "value1": {
+        "value0": {
+            "note": 0,
+            "scale": 1
+        }
+    }
+}`);
 const MINBPM = 60;
 const MAXBPM = 200;
 const WaveFileReader = require('wavefile-reader').WaveFileReader;
@@ -24,7 +44,7 @@ fs.readFile($wFile, (err, data) => {
     else {
         $acid = acidize(data, $wFile);
         fs.writeFileSync($wFile, $acid);
-        //  fs.writeFileSync($wFile.replace(".wav", '') + "-acidized.wav", $acid);
+        //fs.writeFileSync($wFile.replace(".wav", '') + "-acidized.wav", $acid);
     }
 });
 
@@ -34,16 +54,25 @@ function isAcidic($data) { //does the file contain word acid??
 
 function acidize(data, name) {
     wav.fromBuffer(data);
+    console.log(wav);
     nsamples = (wav.data.chunkSize / wav.fmt.numChannels) / (wav.fmt.bitsPerSample / 8);
     duration = nsamples / wav.fmt.sampleRate;
     //console.log(wav);
     let hint = nameBPM(name);
     beats = getBeats(duration, hint);
+    ATEMP.value0.defaultSlice.End = nsamples - 1;
+    ATEMP.value0.numBars = beats[1] / 4;
     console.log([name].concat(beats));
     $tempo = FL.float2HexArr(beats[0]);
+    $mtempo = toBytes(parseInt(beats[0] * 1000));
     //test    
     //    console.log(FL.float2Hex(12.375));
     //console.log(FL.float2Hex(beats[0]));
+    let meta = Uint8Array.from([
+        0x6d, 0x65, 0x74, 0x61,
+        0x04, 0x00, 0x00, 0x00
+    ].concat($mtempo));
+
     let acid = [
         0x61, 0x63, 0x69, 0x64,
         0x18, 0x00, 0x00, 0x00,
@@ -54,8 +83,21 @@ function acidize(data, name) {
         beats[1], 0x00, 0x00, 0x00,
         0x04, 0x00, 0x04, 0x00,
     ].concat($tempo);
+    let $atem = Uint8Array.from([]);
+    /*   if (data.indexOf('atem') > 0) {
+           console.log(ANSI.wrap('FgRed', 'Skipping atem chunk as already Existing'));
+       } else {
+           $atem = Uint8Array.from(bstr(ATEMP));
+       } Skipped atem chunk for now as supposedly not needed */
+    if (data.indexOf('meta') > 0) {
+        console.log(ANSI.wrap('FgRed', 'Skipping Tempo Meta chunk as already Existing'));
+        meta = [];
+    }
     let ua = Uint8Array.from(acid);
-    return Buffer.concat([data, ua]);
+    let slicepoint = data.indexOf('fmt') + 8 + wav.fmt.chunkSize;
+    let header = data.slice(0, slicepoint);
+    let content = data.slice(slicepoint);
+    return Buffer.concat([header, meta, content, ua]);
 }
 
 function getBeats(d, hint = 0) {
@@ -84,4 +126,15 @@ function nameBPM(fn) {
     if (matches)
         return Math.max(...matches);
     return 0;
+}
+function bstr(obj) {
+    str = JSON.stringify(obj, null, 4);
+    arr = [...str].map(s => s.charCodeAt(0));
+    let ln = toBytes(arr.length);
+    arr = [0x61, 0x74, 0x65, 0x6D].concat(ln).concat(arr);
+    return arr;
+
+}
+function toBytes(v) {
+    return v.toString(2).padStart(32, "0").match(/[0|1]{8}/g).reverse().map(b => parseInt(b, 2));
 }

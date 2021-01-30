@@ -2,11 +2,13 @@ Warning: Use at your own Risk.
 Altough you might be inclined to process your entire library at once.
 I Highly recommend caution and advise to process a small portion at a time like say 2-3 GB of loops and test them.
 
+Update: Added Tempo Meta. The Wav files will now Warp and Sync in Akai Force Browser.
+
 Requirements: 
 NodeJs Runtime.
 Download and install NodeJs on your system from: https://nodejs.org/en/download/
 
-Usae Instructions:
+Usage Instructions:
 1: Copy the Wav Files/Folders (loops) to convert into the wavs folder.
 2: Follow Instructions below for your Operating System.
 
