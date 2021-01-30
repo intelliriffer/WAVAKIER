@@ -39,7 +39,8 @@ $wFile = process.argv[2];
 if (!$wFile.toUpperCase().endsWith('.WAV')) throw (`Error: Not a Wav File --  ${$wFile}`);
 if (!fs.existsSync($wFile)) throw (ANSI.wrap('FgRed', `Error File :  ${$wFile} does not exist!`));
 fs.readFile($wFile, (err, data) => {
-
+    console.log(ANSI.wrap('FgGreen', `
+************ Processing:  ${$wFile}`))
     $acid = acidize(data, $wFile);
     fs.writeFileSync($wFile, $acid);
     //fs.writeFileSync($wFile.replace(".wav", '') + "-acidized.wav", $acid);
@@ -59,7 +60,7 @@ function acidize(data, name) {
     ATEMP.value0.defaultSlice.End = nsamples - 1;
     ATEMP.value0.numBars = beats[1] / 4;
     console.log([name].concat(beats));
-    if (beats[0] > LIMIT) throw (ANSI.wrap('FgRed', "Error: Tempo detected Beyond Limit (300 BPM) Skipping! "));
+    if (beats[0] > LIMIT) throw (ANSI.wrap('FgRed', `Error: Tempo [${beats[0]}] detected Beyond Limit of 300 BPM! Skipping! `));
     $tempo = FL.float2HexArr(beats[0]);
     $mtempo = toBytes(parseInt(beats[0] * 1000));
     //test    
@@ -88,12 +89,12 @@ function acidize(data, name) {
        } Skipped atem chunk for now as supposedly not needed */
     if (data.indexOf('meta') > 0) {
         console.log(ANSI.wrap('FgRed', 'Skipping Tempo Meta chunk as already Existing'));
-        meta = [];
+        meta = Uint8Array.from([]);
     }
     let ua = Uint8Array.from(acid);
     if (isAcidic(data)) {
         ua = Uint8Array.from([]);
-        console.log(ANSI.wrap('FgRed', `${name} is already acidized! skipping Acid Tag!!`));
+        console.log(ANSI.wrap('FgRed', `Already acidized! skipping Acid Tag!!`));
     }
     let slicepoint = data.indexOf('fmt') + 8 + wav.fmt.chunkSize;
     let header = data.slice(0, slicepoint);
