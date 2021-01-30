@@ -8,14 +8,14 @@ processFolder();
 function processFolder() {
     let files = glob.sync("wavs/**/*\.[wW][aA][vV]");
     files = files.map(f => path.resolve(f)).filter(f => f.length > 5);
-    files.forEach(f => {
-        runScript("./src/clean.js", function (err) {
-            if (err) {
-                console.log(err);
-            }
-            // console.log(`Processed ${f}`);
+    const execSync = require('child_process').execSync;
 
-        }, [`${f}`]);
+    files.forEach(f => {
+        try {
+            console.log(execSync(`node ./src/clean.js "${f}"`).toString());
+        } catch (e) {
+            console.log(e);
+        }
     });
 }
 

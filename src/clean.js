@@ -19,9 +19,21 @@ fs.readFile($wFile, (err, data) => {
         console.log(ANSI.wrap('FgRed', `${$wFile} is Not acidized! skipping!!`));
     }
     else {
+        console.log('Cleaning: ' + $wFile);
+
         $noacid = data.slice(0, -32);
+        $noacid = strip('meta', $noacid);
+        $noacid = strip('atem', $noacid);
         fs.writeFileSync($wFile, $noacid);
-        console.log('Cleaned: ' + $wFile);
         //  fs.writeFileSync($wFile.replace(".wav", '') + "-acidized.wav", $acid);
     }
 });
+function strip(ID, data) {
+    let p1 = data.indexOf(ID);
+    if (p1 < 0) return data;
+    let plen = parseInt(Array.from(data.slice(p1 + 4, p1 + 8).reverse()).map(v => v.toString(16)).join(''), 16);
+    let p2 = 8 + p1 + plen;
+    let ndata = Buffer.concat([data.slice(0, p1), data.slice(p2)]);
+    console.log(`Removed Chunk: ${ID}`);
+    return ndata;
+}
