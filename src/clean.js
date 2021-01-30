@@ -14,19 +14,22 @@ $wFile = process.argv[2];
 if (!$wFile.toUpperCase().endsWith('.WAV')) throw (`Error: Not a Wav File --  ${$wFile}`);
 if (!fs.existsSync($wFile)) throw (ANSI.wrap('FgRed', `Error File :  ${$wFile} does not exist!`));
 fs.readFile($wFile, (err, data) => {
+
+    console.log(ANSI.wrap('FgGreen', `
+******* Cleaning: ` + $wFile));
     let chunk = data.slice(-32);
     if ((chunk.indexOf('acid') < 0)) {
-        console.log(ANSI.wrap('FgRed', `${$wFile} is Not acidized! skipping!!`));
-    }
-    else {
-        console.log('Cleaning: ' + $wFile);
-
+        console.log(ANSI.wrap('FgRed', `File is Not acidized! skipping Acid Chunk!!`));
+        $noacid = data;
+    } else {
         $noacid = data.slice(0, -32);
-        $noacid = strip('meta', $noacid);
-        $noacid = strip('atem', $noacid);
-        fs.writeFileSync($wFile, $noacid);
-        //  fs.writeFileSync($wFile.replace(".wav", '') + "-acidized.wav", $acid);
     }
+
+    $noacid = strip('meta', $noacid);
+    $noacid = strip('atem', $noacid);
+    fs.writeFileSync($wFile, $noacid);
+    //  fs.writeFileSync($wFile.replace(".wav", '') + "-acidized.wav", $acid);
+
 });
 function strip(ID, data) {
     let p1 = data.indexOf(ID);
