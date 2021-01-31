@@ -12,7 +12,12 @@ function processFolder() {
 
     files.forEach(f => {
         try {
-            console.log(execSync(`node ./src/clean.js "${f}"`).toString());
+            if (f.endsWith('-halfakfy.wav')) {
+                fs.unlinkSync(f);
+            }
+            else {
+                console.log(execSync(`node ./src/clean.js "${f}"`).toString());
+            }
         } catch (e) {
             console.log(e);
         }

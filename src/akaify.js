@@ -50,19 +50,27 @@ function isAcidic($data) { //does the file contain word acid??
     return $data.indexOf('acid') > 16;
 }
 
-function acidize(data, name) {
+function acidize(data, name, half = false) {
     wav.fromBuffer(data);
-    nsamples = (wav.data.chunkSize / wav.fmt.numChannels) / (wav.fmt.bitsPerSample / 8);
-    duration = nsamples / wav.fmt.sampleRate;
+    let nsamples = (wav.data.chunkSize / wav.fmt.numChannels) / (wav.fmt.bitsPerSample / 8);
+    let duration = nsamples / wav.fmt.sampleRate;
     //console.log(wav);
     let hint = nameBPM(name);
-    beats = getBeats(duration, hint);
+    let beats = getBeats(duration, hint);
+    if (half == false && hint <= MINBPM && beats[1] > 8) {
+        console.log("Creating Half BPM version");
+        let $altacid = acidize(data, name, true);
+        fs.writeFileSync($wFile.replace(/\.[wW][aA][vV]$/, "-halfakfy.wav"), $altacid);
+    }
+    if (half == true) {
+        beats = [(beats[0] / 2).toFixed(2), beats[1] / 2];
+    }
     ATEMP.value0.defaultSlice.End = nsamples - 1;
     ATEMP.value0.numBars = beats[1] / 4;
     console.log([name].concat(beats));
     if (beats[0] > LIMIT) throw (ANSI.wrap('FgRed', `Error: Tempo [${beats[0]}] detected Beyond Limit of 300 BPM! Skipping! `));
-    $tempo = FL.float2HexArr(beats[0]);
-    $mtempo = toBytes(parseInt(beats[0] * 1000));
+    let $tempo = FL.float2HexArr(beats[0]);
+    let $mtempo = toBytes(parseInt(beats[0] * 1000));
     //test    
     //    console.log(FL.float2Hex(12.375));
     //console.log(FL.float2Hex(beats[0]));
