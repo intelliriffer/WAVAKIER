@@ -37,12 +37,12 @@ let wav = new WaveFileReader();
 //console.log(ANSI);
 
 
-if (process.argv.length != 3) throw (ANSI.wrap('FgRed', "Error: Too Few Arguments\n Need a Wav File path to Process"));
+if (process.argv.length != 3) throw (ANSI.ERROR("Error: Too Few Arguments\n Need a Wav File path to Process"));
 $wFile = process.argv[2];
 if (!$wFile.toUpperCase().endsWith('.WAV')) throw (`Error: Not a Wav File --  ${$wFile}`);
-if (!fs.existsSync($wFile)) throw (ANSI.wrap('FgRed', `Error File :  ${$wFile} does not exist!`));
+if (!fs.existsSync($wFile)) throw (ANSI.ERROR(`Error File :  ${$wFile} does not exist!`));
 fs.readFile($wFile, (err, data) => {
-    if (data.indexOf('RIFF') !== 0) throw (ANSI.wrap('FgRed', `Error: Not a Valid Wav (RIFF) File --  ${$wFile}`));
+    if (data.indexOf('RIFF') !== 0) throw (ANSI.ERROR(`Error: Not a Valid Wav (RIFF) File --  ${$wFile}`));
 
     console.log(ANSI.wrap('FgGreen', `
 ************ Processing:  ${$wFile}`))
@@ -79,7 +79,7 @@ function acidize(data, name, half = false) {
     ATEMP.value0.defaultSlice.End = nsamples - 1;
     ATEMP.value0.numBars = beats[1] / 4;
     console.log([name].concat(beats));
-    if (beats[0] > LIMIT) throw (ANSI.wrap('FgRed', `Error: Tempo [${beats[0]}] detected Beyond Limit of 300 BPM! Skipping! `));
+    if (beats[0] > LIMIT) throw (ANSI.ERROR(`Error: Tempo [${beats[0]}] detected Beyond Limit of 300 BPM! Skipping! `));
     let $tempo = FL.float2HexArr(beats[0]);
     let $mtempo = toBytes(parseInt(beats[0] * 1000));
     //test    
@@ -102,18 +102,18 @@ function acidize(data, name, half = false) {
     ].concat($tempo);
     let $atem = Uint8Array.from([]);
     /*   if (data.indexOf('atem') > 0) {
-           console.log(ANSI.wrap('FgRed', 'Skipping atem chunk as already Existing'));
+           console.log(ANSI.ERROR('Skipping atem chunk as already Existing'));
        } else {
            $atem = Uint8Array.from(bstr(ATEMP));
        } Skipped atem chunk for now as supposedly not needed */
     if (data.indexOf('meta') > 0) {
-        console.log(ANSI.wrap('FgRed', 'Skipping Tempo Meta chunk as already Existing'));
+        console.log(ANSI.YELLOW('Skipping Tempo Meta chunk as already Existing'));
         meta = Uint8Array.from([]);
     }
     let ua = Uint8Array.from(acid);
     if (isAcidic(data)) {
         ua = Uint8Array.from([]);
-        console.log(ANSI.wrap('FgRed', `Already acidized! skipping Acid Tag!!`));
+        console.log(ANSI.YELLOW(`Already acidized! skipping Acid Tag!!`));
     }
     let slicepoint = data.indexOf('fmt') + 8 + wav.fmt.chunkSize;
     let header = data.slice(0, slicepoint);

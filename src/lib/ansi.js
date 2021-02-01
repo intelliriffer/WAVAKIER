@@ -34,11 +34,28 @@ let ANSI = {
 }
 
 module.exports = {
-    ANSI, wrap
+    ANSI, wrap, ERROR, GREEN, YELLOW, CYAN, BLUE
 
 }
 
 function wrap($color, $data) {
     return ANSI[$color] + $data + ANSI['Reset'];
 
+}
+
+function ERROR($data) {
+    return wrap('FgRed', $data);
+}
+
+function GREEN($data) {
+    return wrap('FgGreen', $data);
+}
+function YELLOW($data) {
+    return wrap('FgYellow', $data);
+}
+function CYAN($data) {
+    return wrap('FgCyan', $data);
+}
+function BLUE($data) {
+    return wrap('FgBlue', $data);
 }
