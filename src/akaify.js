@@ -8,6 +8,7 @@ let fs = require('fs');
 let path = require('path');
 let ANSI = require('./lib/ansi.js');
 let FL = require('./lib/float2bin.js');
+
 let ATEMP = JSON.parse(`{
     "value0": {
         "defaultSlice": {
@@ -34,11 +35,15 @@ const LIMIT = 300;
 const WaveFileReader = require('wavefile-reader').WaveFileReader;
 let wav = new WaveFileReader();
 //console.log(ANSI);
+
+
 if (process.argv.length != 3) throw (ANSI.wrap('FgRed', "Error: Too Few Arguments\n Need a Wav File path to Process"));
 $wFile = process.argv[2];
 if (!$wFile.toUpperCase().endsWith('.WAV')) throw (`Error: Not a Wav File --  ${$wFile}`);
 if (!fs.existsSync($wFile)) throw (ANSI.wrap('FgRed', `Error File :  ${$wFile} does not exist!`));
 fs.readFile($wFile, (err, data) => {
+    if (data.indexOf('RIFF') !== 0) throw (ANSI.wrap('FgRed', `Error: Not a Valid Wav (RIFF) File --  ${$wFile}`));
+
     console.log(ANSI.wrap('FgGreen', `
 ************ Processing:  ${$wFile}`))
     $acid = acidize(data, $wFile);
