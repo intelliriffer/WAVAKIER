@@ -61,10 +61,10 @@ function acidize(data, name, half = false) {
     let duration = nsamples / wav.fmt.sampleRate;
     //console.log(wav);
     let hint = 0;
-    hint = getAcidTempo(data);
-
+    hint = getXMLTempo(data);
+    if (hint == 0) hint = getAcidTempo(data);
     if (hint == 0) hint = nameBPM(name); //since there is no embedded acid chunk see if name has bpm 
-    console.log(hint);
+    console.log("Hint: " + hint);
     let beats = getBeats(duration, hint);
     if (half == false && hint <= MINBPM && beats[1] > 8) {
         console.log("Creating Half BPM version");
@@ -160,6 +160,19 @@ function bstr(obj) {
 function toBytes(v) {
     return v.toString(2).padStart(32, "0").match(/[0|1]{8}/g).reverse().map(b => parseInt(b, 2));
 }
+function getXMLTempo(data) {
+    let xTempo = 0;
+    let apos = data.indexOf('MusicalTempo');
+    if (apos > 0) {
+        let xml = data.slice(apos).toString();
+        // console.log(xml);
+        xBpm = parseFloat(xml.match(/<VALUE>[^(<\/VALUE>]+<\/VALUE>/g)[0].match(/[0-9]+\.?[0-9]*/g)[0]).toFixed(2);
+        if (xBpm > 32 && xBpm < 300)
+            return xBpm;
+    }
+    return xTempo;
+}
+
 function getAcidTempo(data) {
     let aTempo = 0;
     let apos = data.indexOf('acid');
