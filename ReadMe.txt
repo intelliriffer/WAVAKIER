@@ -2,6 +2,10 @@ Warning: Use at your own Risk.
 Altough you might be inclined to process your entire library at once.
 I Highly recommend caution and advise to process a small portion at a time like say 2-3 GB of loops and test them.
 
+v.1.2 Update: 
+Read Tempo from Pre Acidized Files for Hint and Write as Akai Chunk"
+
+V 1.1 Update:
 Update: Added Tempo Meta. The Wav files will now Warp and Sync in Akai Force Browser.
 
 Requirements: 
