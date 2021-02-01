@@ -65,8 +65,6 @@ function acidize(data, name, half = false) {
 
     if (hint == 0) hint = nameBPM(name); //since there is no embedded acid chunk see if name has bpm 
     console.log(hint);
-
-
     let beats = getBeats(duration, hint);
     if (half == false && hint <= MINBPM && beats[1] > 8) {
         console.log("Creating Half BPM version");
@@ -124,8 +122,12 @@ function acidize(data, name, half = false) {
 function getBeats(d, hint = 0) {
     let min = MINBPM;
     let max = MAXBPM;
-    if (hint > min && hint <= LIMIT) max = parseFloat(hint + 1); //account for any decimals
-    let ds = [4, 8, 16, 24, 32, 48, 64, 96, 128];
+    ds = [4, 8, 16, 32, 48, 64, 96, 128];
+    if (hint > min && hint <= LIMIT) {
+        max = parseFloat(hint + 1);
+        ds = [4, 8, 12, 16, 20, 24, 28, 32, 36, 40, 44, 48, 60, 64, 80, 96, 128];
+    } //account for any decimals }
+
     BPMS = ds.map(function (i) {
         return (60 / (d / i)).toFixed(2);
     });
