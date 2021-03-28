@@ -1,3 +1,6 @@
+Purpose : Detect and Write Tempo (BPM) to wav files so Akai Force/Mpc Can read / decipher better.
+Note: Only works for 4/4 files otherwise the information added might be wrong.
+
 Warning: Use at your own Risk.
 Altough you might be inclined to process your entire library at once.
 I Highly recommend caution and advise to process a small portion at a time like say 2-3 GB of loops and test them.
